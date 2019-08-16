@@ -82,7 +82,7 @@ echo ""
 echo "Sleepting for 60 seconds..."
 sleep 60
 echo "Ejecting cloud-init CD image from VM..."
-virsh change-media citest $CLOUD_IMAGE_DIR/$1-cloudinit.iso --eject
+virsh change-media $1 $CLOUD_IMAGE_DIR/$1-cloudinit.iso --eject
 echo ""
 
 # Remove cloud-init CD image
