@@ -8,7 +8,6 @@ CLOUD_IMAGE_DIR="/mnt/vm-hdd/cloud-images"
 VM_DISK_DIR="/mnt/vm-ssd"
 TMP_DIR="/mnt/vm-hdd/tmp"
 
-
 # Take one argument from the command line: <vm-name>
 if ! [ $# -eq 1 ]; then
 	echo "Usage: $0 <vm-name>"
@@ -79,8 +78,9 @@ virt-install \
 echo ""
 
 # Eject cloud-init CD image after VM has booted
-echo "Sleepting for 60 seconds..."
+echo "Sleeping for 60 seconds..."
 sleep 60
+echo ""
 echo "Ejecting cloud-init CD image from VM..."
 virsh change-media $1 $CLOUD_IMAGE_DIR/$1-cloudinit.iso --eject
 echo ""
@@ -90,7 +90,15 @@ echo "Deleting cloud-init CD image..."
 rm -f $CLOUD_IMAGE_DIR/$1-cloudinit.iso
 echo ""
 
-# Final messages
-echo "Tip: Check virt-manager for IP address"
+
+# Display VM network interfaces (pass through python json formatter if python is installed)
+echo "VM Network Interfaces (look for IP address):"
+which python > /dev/null
+if [ $? -eq 0 ]; then
+	virsh qemu-agent-command $1 '{"execute":"guest-network-get-interfaces"}' | python -mjson.tool
+else
+	virsh qemu-agent-command $1 '{"execute":"guest-network-get-interfaces"}'
+fi
 echo ""
+
 echo "Done!"
